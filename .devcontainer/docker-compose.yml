@@ -5,6 +5,7 @@ services:
     build: .
     volumes:
       - ..:/home/animmendation/tcc_animmendation/frontend
+      - ~/.ssh:/home/animmendation/.ssh
     ports:
       - 3000:3000
     command: tail -f /dev/null
