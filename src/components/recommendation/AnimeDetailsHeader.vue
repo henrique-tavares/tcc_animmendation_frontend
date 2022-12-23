@@ -9,11 +9,7 @@
         target="_blank"
         class="self-start hover:ring rounded-lg transition ring-ani-light-blue/50"
       >
-        <img
-          src="/img/mal_logo_large.png"
-          alt=""
-          class="w-7 md:w-10 rounded-lg"
-        />
+        <img :src="MalLogoLarge" alt="" class="w-7 md:w-10 rounded-lg" />
       </a>
       <IconTablerChevronUp
         v-if="!!arrow"
@@ -25,6 +21,8 @@
 </template>
 
 <script setup lang="ts">
+import MalLogoLarge from "@/assets/img/mal_logo_large.png";
+
 const props = defineProps<{
   id: number;
   title: string;
