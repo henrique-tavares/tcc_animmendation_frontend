@@ -27,5 +27,5 @@ jobs:
       with:
         push: true
         file: .docker/Dockerfile
-        tags: ${{ github.repository }}:latest
+        tags: ghcr.io/${{ github.repository }}:latest
 
