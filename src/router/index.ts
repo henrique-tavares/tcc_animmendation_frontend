@@ -1,6 +1,4 @@
-import { useInitStore } from "@/stores/init";
 import { useUserStore } from "@/stores/user";
-import fetchUserList from "@/utils/fetchUserList";
 import { createRouter, createWebHistory } from "vue-router";
 
 declare module "vue-router" {
@@ -41,6 +39,20 @@ const router = createRouter({
       name: "login",
       component: () => import("@/views/login/LoginView.vue"),
       meta: { layout: "LoginLayout" },
+    },
+    {
+      path: "/recommendation/:animeId",
+      name: "recommendation",
+      component: () => import("@/views/recommendation/RecommendationView.vue"),
+      meta: { layout: "RecommendationLayout" },
+      props: (route) => ({ animeId: Number(route.params.animeId) }),
+    },
+    {
+      path: "/recommendation/group",
+      name: "groupRecommendation",
+      component: () =>
+        import("@/views/recommendation/GroupRecommendationView.vue"),
+      meta: { layout: "RecommendationLayout" },
     },
   ],
 });

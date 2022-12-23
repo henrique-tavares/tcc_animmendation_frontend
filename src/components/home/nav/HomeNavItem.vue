@@ -1,6 +1,6 @@
 <template>
   <RouterLink
-    class="h-12 select-none text-lg flex font-semibold items-center px-2 relative after:absolute after:top-[calc(100%-4px)] after:bg-ani-blue after:left-0 after:right-0 after:mx-auto after:h-2 after:rounded-full hover:text-ani-blue transition"
+    class="h-12 select-none text-sm md:text-lg flex font-semibold items-center px-2 relative after:absolute after:top-[calc(100%-4px)] after:bg-ani-blue after:left-0 after:right-0 after:mx-auto after:h-2 after:rounded-full hover:text-ani-blue transition"
     :class="
       $route.name == props.routeName
         ? 'text-ani-blue  after:shadow-md enter after:w-full'

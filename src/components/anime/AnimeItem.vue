@@ -1,7 +1,7 @@
 <template>
   <div class="relative">
     <div
-      class="flex flex-col items-center shadow-lg border transition-all rounded-box relative flex-shrink-0 w-64"
+      class="flex flex-col items-center shadow-lg border transition-all rounded-box relative flex-shrink-0 w-64 select-none"
       @mouseenter="hoverVisible = true"
       ref="animeItem"
     >
@@ -30,7 +30,7 @@
         <div
           class="flex invisible opacity-0 group-hover:visible group-hover:opacity-100 group-hover:scale-110 group-hover:delay-200 flex-col items-center shadow-xl border transition-all rounded-box w-[16rem]"
         >
-          <div class="relative overflow-visible w-full">
+          <div class="relative overflow-visible w-full select-none">
             <img
               v-if="anime.picture"
               :src="anime.picture"
@@ -74,18 +74,44 @@
               </span>
             </div>
             <div class="flex flex-col items-center justify-center gap-3">
-              <div
+              <button
+                type="button"
                 class="btn btn-sm w-full btn-outline btn-accent rounded-full gap-2"
+                @click="
+                  $router.push({
+                    name: 'recommendation',
+                    params: { animeId: anime.id },
+                  })
+                "
               >
                 Ver Recomendações
                 <IconTablerArrowNarrowRight />
-              </div>
-              <div
+              </button>
+              <button
+                v-if="!animeGroupStore.inGroup(anime.id)"
+                type="button"
                 class="btn btn-sm w-full btn-outline btn-info rounded-full gap-2"
+                :class="{
+                  '!bg-transparent !text-info/75 !cursor-not-allowed':
+                    animeGroupStore.isFull(),
+                }"
+                :disabled="animeGroupStore.isFull()"
+                @click="
+                  handleAddGroupItem({ id: anime.id, title: anime.title })
+                "
               >
                 Add ao grupo
                 <IconTablerPlus />
-              </div>
+              </button>
+              <button
+                v-else
+                type="button"
+                class="btn btn-sm w-full btn-outline btn-info rounded-full gap-2"
+                @click="handleRemoveGroupItem(anime.id)"
+              >
+                Remover do grupo
+                <IconTablerMinus />
+              </button>
             </div>
           </div>
         </div>
@@ -97,17 +123,52 @@
 <script setup lang="ts">
 import type { AnimeMediaType } from "@/graphql/gen/generated";
 import type { QueryAnime } from "@/graphql/queries/animeQueries";
+import { emitter } from "@/providers/emitterProvider";
+import { useAnimeGroupStore, type AnimeGroupItem } from "@/stores/animeGroup";
 import { mediaTypeTranslator } from "@/translate/anime";
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import AgeClassificationIcon from "./AgeClassificationIcon.vue";
 
-const hovered = ref(false);
-const timeout = ref<number | null>(null);
+const props = withDefaults(
+  defineProps<{
+    anime: QueryAnime;
+    groupEnabled?: boolean;
+  }>(),
+  {
+    groupEnabled: false,
+  }
+);
+
+const animeGroupStore = useAnimeGroupStore();
+
 const hoverVisible = ref(false);
 const animeItem = ref<HTMLElement | null>(null);
 const animeRect = ref<{ top: number; left: number } | null>(null);
 
 const animeRectIntervaler = ref<number | null>(null);
+
+function handleAddGroupItem(item: AnimeGroupItem) {
+  animeGroupStore.addItem(item);
+
+  emitter.emit("add-toast", {
+    type: "success",
+    message: "Anime adicionado ao grupo",
+  });
+}
+
+function handleRemoveGroupItem(id: number) {
+  animeGroupStore.removeItem(id);
+}
+
+function handleMouseLeave() {
+  setTimeout(() => {
+    hoverVisible.value = false;
+  }, 200);
+}
+
+function handleMediaType(mediaType: AnimeMediaType | null) {
+  return mediaType ? mediaTypeTranslator(mediaType) : "Desconhecido";
+}
 
 onMounted(() => {
   animeRectIntervaler.value = setInterval(() => {
@@ -122,26 +183,6 @@ onMounted(() => {
 onUnmounted(() => {
   clearInterval(animeRectIntervaler.value!);
 });
-
-function handleMouseLeave() {
-  setTimeout(() => {
-    hoverVisible.value = false;
-  }, 200);
-}
-
-function handleMediaType(mediaType: AnimeMediaType | null) {
-  return mediaType ? mediaTypeTranslator(mediaType) : "Desconhecido";
-}
-
-const props = withDefaults(
-  defineProps<{
-    anime: QueryAnime;
-    groupEnabled?: boolean;
-  }>(),
-  {
-    groupEnabled: false,
-  }
-);
 </script>
 
 <style scoped></style>

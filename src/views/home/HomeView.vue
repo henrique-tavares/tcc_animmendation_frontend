@@ -1,6 +1,6 @@
 <template>
   <div
-    class="w-full flex flex-col flex-grow container self-center items-center pb-60"
+    class="w-full flex flex-col flex-grow md:container self-center items-center pb-60"
   >
     <AnimeCarousel v-for="animeData in animesData" :data="animeData" />
   </div>

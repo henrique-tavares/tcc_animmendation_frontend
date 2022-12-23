@@ -3,7 +3,12 @@
 
 @import "./tailwind.css";
 @import "./transitions.css";
-/* @import "../../../node_modules/@vueform/multiselect/themes/tailwind.css"; */
+
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
 
 img {
   pointer-events: none;

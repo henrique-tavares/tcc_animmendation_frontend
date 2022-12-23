@@ -15,12 +15,14 @@
     </div>
     <div class="flex flex-col gap-5 items-center w-full">
       <button
+        type="button"
         class="btn btn-secondary btn-lg btn-block font-poppins normal-case"
         @click="guestLogin"
       >
         Continuar como Visitante
       </button>
       <button
+        type="button"
         class="btn btn-primary flex flex-row flex-nowrap btn-lg btn-block font-poppins p-0 border-0 normal-case"
         @click="login"
       >
@@ -96,7 +98,6 @@ async function login() {
   try {
     emitter.emit("loading-modal", true);
     const token = await getAccessToken(sessionId);
-    console.log(token);
     userStore.token = token;
     userStore.guest = false;
   } catch (error) {
@@ -148,7 +149,6 @@ async function getAccessToken(sessionId: string) {
         }>(`${import.meta.env.VITE_API_URL}/login/credentials/${sessionId}`)
         .then(({ data }) => {
           failedCount = 0;
-          console.log("data", data);
           if (data.credentials) {
             clearInterval(intervaler);
             resolve(data.credentials);

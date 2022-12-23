@@ -40,8 +40,8 @@ onMounted(async () => {
 <template>
   <main class="bg-white text-ani-black font-poppins z-0">
     <BaseLayoutVue />
-    <LoadingModal class="z-10" />
-    <ToastModal class="z-20" />
+    <LoadingModal class="z-20" />
+    <ToastModal class="z-30" />
   </main>
 </template>
 

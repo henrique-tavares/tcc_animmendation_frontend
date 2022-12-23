@@ -1,7 +1,13 @@
-query GetAnimeRecommendations($id: Int!, $k: Int!, $excludedAnimeIds: [Int!]!) {
+query GetAnimeRecommendations(
+  $id: Int!
+  $amount: Int!
+  $offset: Int
+  $excludedAnimeIds: [Int!]!
+) {
   getAnimeRecommendations(
     animeId: $id
-    k: $k
+    amount: $amount
+    offset: $offset
     excludedAnimeIds: $excludedAnimeIds
   ) {
     anime {
@@ -25,6 +31,7 @@ query GetGroupRecomendations(
   $endDateMethod: DateMethod
   $nullEndDate: Boolean
   $amount: Int!
+  $offset: Int
 ) {
   getGroupRecommendations(
     animesId: $animeIds
@@ -40,6 +47,7 @@ query GetGroupRecomendations(
     startDate: $startDate
     startDateMethod: $startDateMethod
     studios: $studios
+    offset: $offset
   ) {
     anime {
       ...QueryAnime

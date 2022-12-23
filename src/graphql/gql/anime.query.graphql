@@ -14,7 +14,31 @@ fragment QueryAnime on Anime {
   source
 }
 
-query getAnimeBySeason(
+query GetAnimeById($id: Int!) {
+  getAnimeById(id: $id) {
+    id
+    genres
+    synopsis
+    ageClassification
+    studios
+    source
+    episodes
+    rank
+    popularity
+    relatedAnime
+    title
+    score
+    alternativeTitles
+    picture
+    status
+    mediaType
+    startDate
+    endDate
+    releasedSeason
+  }
+}
+
+query GetAnimeBySeason(
   $season: AnimeSeason!
   $year: Int!
   $method: TopAnimeMethod
@@ -68,8 +92,10 @@ query GetTopAnime(
   }
 }
 
-query ListAnimeById($ids: [Int!]!) {
-  listAnimeById(ids: $ids) {
+query ListAnimeById($ids: [Int!]!, $method: TopAnimeMethod!) {
+  listAnimeById(ids: $ids, method: $method) {
+    status
+    synopsis
     ...QueryAnime
   }
 }
@@ -89,5 +115,18 @@ query GetAnimeSources($amount: Int) {
 query GetAnimeStudio($amount: Int) {
   getAnimeStudios(amount: $amount) {
     studio
+  }
+}
+
+query GetRelatedAnime($animeId: Int!, $excludedAnimeIds: [Int!]) {
+  getRelatedAnime(animeId: $animeId, excludedAnimeIds: $excludedAnimeIds) {
+    id
+    title
+    score
+    popularity
+    picture
+    mediaType
+    genres
+    relation
   }
 }

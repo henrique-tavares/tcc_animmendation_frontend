@@ -2,13 +2,23 @@
   <div class="w-full container flex flex-col items-center gap-10 py-10">
     <div class="flex flex-col w-full max-w-5xl">
       <div
-        class="w-full flex flex-grow text-xl font-medium items-center justify-center bg-ani-blue text-ani-cold-white shadow-md rounded-full px-8 py-3"
+        class="w-full flex flex-grow text-xl font-medium items-center justify-center bg-ani-blue text-ani-cold-white shadow-md rounded-lg md:rounded-full px-8 py-3"
       >
         {{ title }}
       </div>
     </div>
-    <div class="flex items-center gap-6 justify-center w-full">
+    <div class="overflow-x-auto md:hidden w-full">
+      <div class="flex gap-4 snap-proximity px-2">
+        <AnimeItemMobile
+          v-for="(anime, i) in animes"
+          :key="`p_${i}`"
+          :anime="anime"
+        />
+      </div>
+    </div>
+    <div class="max-md:hidden flex items-center gap-6 justify-center w-full">
       <button
+        type="button"
         :disabled="!hasPrev"
         @click="goPrev"
         class="disabled:opacity-40 group disabled:cursor-not-allowed"
@@ -25,6 +35,7 @@
         />
       </div>
       <button
+        type="button"
         :disabled="!hasNext"
         @click="goNext"
         class="disabled:opacity-40 group disabled:cursor-not-allowed"

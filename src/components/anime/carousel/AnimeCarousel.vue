@@ -1,8 +1,8 @@
 <template>
-  <div class="w-full container flex flex-col items-center gap-10 py-10">
+  <div class="w-full md:container flex flex-col items-center gap-10 py-10">
     <div class="flex flex-col w-full max-w-5xl">
       <div
-        class="w-full flex flex-grow text-xl font-medium items-center justify-center bg-ani-blue text-ani-cold-white shadow-md rounded-full px-8 py-3"
+        class="w-full flex flex-grow md:text-xl font-medium items-center justify-center bg-ani-blue text-ani-cold-white shadow-md text-center rounded-t-2xl md:rounded-full px-8 py-3"
       >
         <Transition name="fade" mode="out-in">
           <span v-if="chosenTab == 'popularity'">
@@ -13,20 +13,20 @@
           </span>
         </Transition>
       </div>
-      <div class="w-full px-8">
+      <div class="w-full md:px-8">
         <div class="w-full flex bg-ani-light-blue/20 rounded-b-2xl shadow-md">
           <Transition name="fade" mode="out-in">
             <button
               type="button"
               v-if="chosenTab == 'popularity'"
-              class="bg-ani-light-blue text-blue-900 font-semibold text-lg w-full rounded-b-2xl h-full px-4 py-2"
+              class="bg-ani-light-blue text-blue-900 font-semibold md:text-lg w-full rounded-b-2xl h-full px-4 py-2"
             >
               Popularidade
             </button>
             <button
               type="button"
               v-else
-              class="bg-transparent text-blue-900/30 font-semibold text-lg w-full rounded-b-2xl h-full px-4 py-2 hover:text-blue-900 transition-all"
+              class="bg-transparent text-blue-900/30 font-semibold md:text-lg w-full rounded-b-2xl h-full px-4 py-2 hover:text-blue-900 transition-all"
               @click="chosenTab = 'popularity'"
             >
               Popularidade
@@ -36,14 +36,14 @@
             <button
               type="button"
               v-if="chosenTab == 'score'"
-              class="bg-ani-light-blue text-blue-900 font-semibold text-lg w-full rounded-b-2xl h-full px-4 py-2"
+              class="bg-ani-light-blue text-blue-900 font-semibold md:text-lg w-full rounded-b-2xl h-full px-4 py-2"
             >
               Nota
             </button>
             <button
               type="button"
               v-else
-              class="bg-transparent text-blue-900/30 font-semibold text-lg w-full rounded-b-2xl h-full px-4 py-2 hover:text-blue-900 transition-all"
+              class="bg-transparent text-blue-900/30 font-semibold md:text-lg w-full rounded-b-2xl h-full px-4 py-2 hover:text-blue-900 transition-all"
               @click="chosenTab = 'score'"
             >
               Nota
@@ -52,14 +52,39 @@
         </div>
       </div>
     </div>
-    <div class="flex items-center gap-6 justify-center w-full">
+    <div class="overflow-x-auto md:hidden w-full">
+      <Transition name="fade" mode="out-in">
+        <div
+          v-if="chosenTab == 'popularity'"
+          class="flex gap-4 snap-proximity px-2"
+        >
+          <AnimeItemMobile
+            v-for="(anime, i) in data.popularity.animes"
+            :key="`p_${i}`"
+            :anime="anime"
+          />
+        </div>
+        <div
+          v-else-if="chosenTab == 'score'"
+          class="flex gap-4 snap-proximity px-2"
+        >
+          <AnimeItemMobile
+            v-for="(anime, j) in data.score.animes"
+            :key="`s_${j}`"
+            :anime="anime"
+          />
+        </div>
+      </Transition>
+    </div>
+    <div class="max-md:hidden flex items-center gap-6 justify-center w-full">
       <button
+        type="button"
         :disabled="!hasPrev[chosenTab]"
         @click="goPrev(chosenTab)"
-        class="disabled:opacity-40 group disabled:cursor-not-allowed"
+        class="disabled:opacity-40 group disabled:cursor-not-allowed min-w-[3rem]"
       >
         <IconTablerChevronLeft
-          class="w-12 h-12 text-ani-orange drop-shadow group-disabled:hover:translate-x-0 hover:-translate-x-1 transition flex-shrink-0"
+          class="w-12 h-12 text-ani-orange drop-shadow group-disabled:hover:translate-x-0 hover:-translate-x-1 transition"
         />
       </button>
       <div class="flex justify-center select-none w-full" ref="carouselBody">
@@ -81,12 +106,13 @@
         </Transition>
       </div>
       <button
+        type="button"
         :disabled="!hasNext[chosenTab]"
         @click="goNext(chosenTab)"
         class="disabled:opacity-40 group disabled:cursor-not-allowed"
       >
         <IconTablerChevronRight
-          class="w-12 h-12 text-ani-orange drop-shadow group-disabled:hover:translate-x-0 hover:translate-x-1 transition flex-shrink-0"
+          class="w-12 h-12 text-ani-orange drop-shadow group-disabled:hover:translate-x-0 hover:translate-x-1 transition"
         />
       </button>
     </div>
@@ -98,6 +124,7 @@ import type { QueryAnime } from "@/graphql/queries/animeQueries";
 import _ from "lodash";
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import AnimeItem from "../AnimeItem.vue";
+import AnimeItemMobile from "../AnimeItemMobile.vue";
 
 const props = defineProps<{
   data: {
@@ -195,7 +222,7 @@ function calculateCarouselItems() {
   const itemsWithGap =
     (initialItemsFit - 1) * 16 + initialItemsFit * animeItemWidth;
   const finalItemsFit =
-    itemsWithGap > carouselContainerSize
+    itemsWithGap >= carouselContainerSize
       ? initialItemsFit - 1
       : initialItemsFit;
 

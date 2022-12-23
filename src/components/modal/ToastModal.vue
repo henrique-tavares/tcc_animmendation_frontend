@@ -1,7 +1,7 @@
 <template>
   <Teleport to="body">
     <div class="fixed bottom-0 right-0" :class="props.class">
-      <TransitionGroup name="toast" tag="ul" class="p-3">
+      <TransitionGroup name="toast" tag="ul" class="p-3 flex flex-col gap-3">
         <li v-for="toast in toasts" :key="toast.id" class="animate-none">
           <div
             :class="

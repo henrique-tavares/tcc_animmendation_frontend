@@ -15,6 +15,7 @@ export type AnimeReleasedSeason = {
 export type UserAnimeList = {
   anime: {
     id: number;
+    title: string;
     popularity?: number;
     genres?: string[];
     ageClassification?: AnimeAgeClassification;
@@ -49,18 +50,25 @@ export const useUserListStore = defineStore("userList", {
     ),
   }),
   actions: {
+    getUserSeenAnime() {
+      return this.userAnimeList?.map((rating) => rating.anime.id);
+    },
     getTopAnime({
       amount,
       genres,
       mediaTypes,
-      original,
       studios,
+      sources,
+      title,
+      offset = 0,
     }: {
       amount: number;
+      offset?: number;
       mediaTypes?: AnimeMediaType[];
       genres?: string[];
-      original?: boolean;
       studios?: string[];
+      sources?: string[];
+      title?: string;
     }) {
       if (!this.userAnimeList) {
         return null;
@@ -98,8 +106,11 @@ export const useUserListStore = defineStore("userList", {
             }
           }
 
-          if (original) {
-            if (!rating.anime.source || rating.anime.source != "original") {
+          if (sources) {
+            if (
+              !rating.anime.source ||
+              !sources.includes(rating.anime.source)
+            ) {
               return false;
             }
           }
@@ -116,9 +127,17 @@ export const useUserListStore = defineStore("userList", {
             }
           }
 
+          if (title) {
+            if (
+              !rating.anime.title.toLowerCase().includes(title.toLowerCase())
+            ) {
+              return false;
+            }
+          }
+
           return true;
         })
-        .slice(0, amount);
+        .slice(offset, offset + amount);
     },
     getTop5Genres() {
       if (!this.genreCount) {

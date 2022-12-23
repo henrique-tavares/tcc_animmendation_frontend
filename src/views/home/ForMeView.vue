@@ -61,9 +61,13 @@ async function loadNextPage() {
       return;
     }
 
-    for (const task of pageTasks) {
-      animesData.value!.push(await task());
-    }
+    // for (const task of pageTasks) {
+    //   animesData.value!.push(await task());
+    // }
+
+    animesData.value.push(
+      ...(await Promise.all(pageTasks.map((task) => task())))
+    );
   } catch (error) {
     console.error(error);
   } finally {
@@ -99,7 +103,7 @@ onMounted(async () => {
         userTop10Animes,
         userListStore.getTopAnime({
           amount: 10,
-          original: true,
+          sources: ["original"],
         })!
       ),
       genres: userTop5Genres.reduce(
@@ -174,7 +178,7 @@ onMounted(async () => {
             })
       ),
     ];
-    paginatedAnimeQueries.value = chunk(tasks, 3);
+    paginatedAnimeQueries.value = chunk(tasks, 5);
 
     await loadNextPage();
   } catch (err) {

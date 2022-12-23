@@ -71,6 +71,21 @@ export enum AnimeMediaType {
   Tv = "TV",
 }
 
+/** The relation between animes */
+export enum AnimeRelation {
+  AlternativeSetting = "alternative_setting",
+  AlternativeVersion = "alternative_version",
+  Character = "character",
+  FullStory = "full_story",
+  Other = "other",
+  ParentStory = "parent_story",
+  Prequel = "prequel",
+  Sequel = "sequel",
+  SideStory = "side_story",
+  SpinOff = "spin_off",
+  Summary = "summary",
+}
+
 /** The seasons in which Animes are released */
 export enum AnimeSeason {
   Fall = "FALL",
@@ -126,6 +141,7 @@ export type Query = {
   getAnimeSources: Array<AnimeSource>;
   getAnimeStudios: Array<AnimeStudio>;
   getGroupRecommendations: Array<Recommendation>;
+  getRelatedAnime: Array<RelatedAnime>;
   getTopAnime: Array<Anime>;
   getUser: User;
   getUserAnimeList: Array<UserAnimeRating>;
@@ -156,9 +172,10 @@ export type QueryGetAnimeGenresArgs = {
 };
 
 export type QueryGetAnimeRecommendationsArgs = {
+  amount: Scalars["Int"];
   animeId: Scalars["Int"];
   excludedAnimeIds: Array<Scalars["Int"]>;
-  k: Scalars["Int"];
+  offset?: InputMaybe<Scalars["Int"]>;
 };
 
 export type QueryGetAnimeSourcesArgs = {
@@ -180,10 +197,16 @@ export type QueryGetGroupRecommendationsArgs = {
   hentai?: InputMaybe<Scalars["Boolean"]>;
   mediaTypes?: InputMaybe<Array<AnimeMediaType>>;
   nullEndDate?: InputMaybe<Scalars["Boolean"]>;
+  offset?: InputMaybe<Scalars["Int"]>;
   sources?: InputMaybe<Array<Scalars["String"]>>;
   startDate?: InputMaybe<Scalars["DateTime"]>;
   startDateMethod?: InputMaybe<DateMethod>;
   studios?: InputMaybe<Array<Scalars["String"]>>;
+};
+
+export type QueryGetRelatedAnimeArgs = {
+  animeId: Scalars["Int"];
+  excludedAnimeIds?: InputMaybe<Array<Scalars["Int"]>>;
 };
 
 export type QueryGetTopAnimeArgs = {
@@ -207,6 +230,7 @@ export type QueryGetTopAnimeArgs = {
 
 export type QueryListAnimeByIdArgs = {
   ids: Array<Scalars["Int"]>;
+  method: TopAnimeMethod;
 };
 
 /** Object representing a single Anime recommendation */
@@ -216,11 +240,23 @@ export type Recommendation = {
   rank: Scalars["Int"];
 };
 
+/** Object representing a related anime */
+export type RelatedAnime = {
+  __typename?: "RelatedAnime";
+  genres?: Maybe<Array<Scalars["String"]>>;
+  id: Scalars["Int"];
+  mediaType?: Maybe<AnimeMediaType>;
+  picture?: Maybe<Scalars["String"]>;
+  popularity?: Maybe<Scalars["Int"]>;
+  relation: AnimeRelation;
+  score: Scalars["Float"];
+  title: Scalars["String"];
+};
+
 /** Criteria for getting popular Anime */
 export enum TopAnimeMethod {
   Popularity = "POPULARITY",
   Score = "SCORE",
-  Title = "TITLE",
 }
 
 /** Object representing an user */
@@ -263,6 +299,36 @@ export type QueryAnimeFragment = {
   studios?: Array<string> | null;
   endDate?: any | null;
   source?: string | null;
+};
+
+export type GetAnimeByIdQueryVariables = Exact<{
+  id: Scalars["Int"];
+}>;
+
+export type GetAnimeByIdQuery = {
+  __typename?: "Query";
+  getAnimeById: {
+    __typename?: "Anime";
+    id: number;
+    genres?: Array<string> | null;
+    synopsis?: string | null;
+    ageClassification?: AnimeAgeClassification | null;
+    studios?: Array<string> | null;
+    source?: string | null;
+    episodes?: number | null;
+    rank?: number | null;
+    popularity?: number | null;
+    relatedAnime?: Array<string> | null;
+    title: string;
+    score: number;
+    alternativeTitles: Array<string>;
+    picture?: string | null;
+    status: AnimeStatus;
+    mediaType?: AnimeMediaType | null;
+    startDate?: any | null;
+    endDate?: any | null;
+    releasedSeason?: string | null;
+  };
 };
 
 export type GetAnimeBySeasonQueryVariables = Exact<{
@@ -332,12 +398,15 @@ export type GetTopAnimeQuery = {
 
 export type ListAnimeByIdQueryVariables = Exact<{
   ids: Array<Scalars["Int"]> | Scalars["Int"];
+  method: TopAnimeMethod;
 }>;
 
 export type ListAnimeByIdQuery = {
   __typename?: "Query";
   listAnimeById: Array<{
     __typename?: "Anime";
+    status: AnimeStatus;
+    synopsis?: string | null;
     id: number;
     genres?: Array<string> | null;
     ageClassification?: AnimeAgeClassification | null;
@@ -381,9 +450,30 @@ export type GetAnimeStudioQuery = {
   getAnimeStudios: Array<{ __typename?: "AnimeStudio"; studio: string }>;
 };
 
+export type GetRelatedAnimeQueryVariables = Exact<{
+  animeId: Scalars["Int"];
+  excludedAnimeIds?: InputMaybe<Array<Scalars["Int"]> | Scalars["Int"]>;
+}>;
+
+export type GetRelatedAnimeQuery = {
+  __typename?: "Query";
+  getRelatedAnime: Array<{
+    __typename?: "RelatedAnime";
+    id: number;
+    title: string;
+    score: number;
+    popularity?: number | null;
+    picture?: string | null;
+    mediaType?: AnimeMediaType | null;
+    genres?: Array<string> | null;
+    relation: AnimeRelation;
+  }>;
+};
+
 export type GetAnimeRecommendationsQueryVariables = Exact<{
   id: Scalars["Int"];
-  k: Scalars["Int"];
+  amount: Scalars["Int"];
+  offset?: InputMaybe<Scalars["Int"]>;
   excludedAnimeIds: Array<Scalars["Int"]> | Scalars["Int"];
 }>;
 
@@ -425,6 +515,7 @@ export type GetGroupRecomendationsQueryVariables = Exact<{
   endDateMethod?: InputMaybe<DateMethod>;
   nullEndDate?: InputMaybe<Scalars["Boolean"]>;
   amount: Scalars["Int"];
+  offset?: InputMaybe<Scalars["Int"]>;
 }>;
 
 export type GetGroupRecomendationsQuery = {
@@ -474,6 +565,7 @@ export type GetUserAnimeListQuery = {
     anime: {
       __typename?: "Anime";
       id: number;
+      title: string;
       popularity?: number | null;
       genres?: Array<string> | null;
       ageClassification?: AnimeAgeClassification | null;
@@ -516,13 +608,88 @@ export const QueryAnimeFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<QueryAnimeFragment, unknown>;
+export const GetAnimeByIdDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "GetAnimeById" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
+          type: {
+            kind: "NonNullType",
+            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "getAnimeById" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "id" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "id" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "genres" } },
+                { kind: "Field", name: { kind: "Name", value: "synopsis" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "ageClassification" },
+                },
+                { kind: "Field", name: { kind: "Name", value: "studios" } },
+                { kind: "Field", name: { kind: "Name", value: "source" } },
+                { kind: "Field", name: { kind: "Name", value: "episodes" } },
+                { kind: "Field", name: { kind: "Name", value: "rank" } },
+                { kind: "Field", name: { kind: "Name", value: "popularity" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "relatedAnime" },
+                },
+                { kind: "Field", name: { kind: "Name", value: "title" } },
+                { kind: "Field", name: { kind: "Name", value: "score" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "alternativeTitles" },
+                },
+                { kind: "Field", name: { kind: "Name", value: "picture" } },
+                { kind: "Field", name: { kind: "Name", value: "status" } },
+                { kind: "Field", name: { kind: "Name", value: "mediaType" } },
+                { kind: "Field", name: { kind: "Name", value: "startDate" } },
+                { kind: "Field", name: { kind: "Name", value: "endDate" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "releasedSeason" },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GetAnimeByIdQuery, GetAnimeByIdQueryVariables>;
 export const GetAnimeBySeasonDocument = {
   kind: "Document",
   definitions: [
     {
       kind: "OperationDefinition",
       operation: "query",
-      name: { kind: "Name", value: "getAnimeBySeason" },
+      name: { kind: "Name", value: "GetAnimeBySeason" },
       variableDefinitions: [
         {
           kind: "VariableDefinition",
@@ -992,6 +1159,20 @@ export const ListAnimeByIdDocument = {
             },
           },
         },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "method" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "TopAnimeMethod" },
+            },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -1008,10 +1189,20 @@ export const ListAnimeByIdDocument = {
                   name: { kind: "Name", value: "ids" },
                 },
               },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "method" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "method" },
+                },
+              },
             ],
             selectionSet: {
               kind: "SelectionSet",
               selections: [
+                { kind: "Field", name: { kind: "Name", value: "status" } },
+                { kind: "Field", name: { kind: "Name", value: "synopsis" } },
                 {
                   kind: "FragmentSpread",
                   name: { kind: "Name", value: "QueryAnime" },
@@ -1163,6 +1354,86 @@ export const GetAnimeStudioDocument = {
     },
   ],
 } as unknown as DocumentNode<GetAnimeStudioQuery, GetAnimeStudioQueryVariables>;
+export const GetRelatedAnimeDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "GetRelatedAnime" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "animeId" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "excludedAnimeIds" },
+          },
+          type: {
+            kind: "ListType",
+            type: {
+              kind: "NonNullType",
+              type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "getRelatedAnime" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "animeId" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "animeId" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "excludedAnimeIds" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "excludedAnimeIds" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "title" } },
+                { kind: "Field", name: { kind: "Name", value: "score" } },
+                { kind: "Field", name: { kind: "Name", value: "popularity" } },
+                { kind: "Field", name: { kind: "Name", value: "picture" } },
+                { kind: "Field", name: { kind: "Name", value: "mediaType" } },
+                { kind: "Field", name: { kind: "Name", value: "genres" } },
+                { kind: "Field", name: { kind: "Name", value: "relation" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  GetRelatedAnimeQuery,
+  GetRelatedAnimeQueryVariables
+>;
 export const GetAnimeRecommendationsDocument = {
   kind: "Document",
   definitions: [
@@ -1181,11 +1452,22 @@ export const GetAnimeRecommendationsDocument = {
         },
         {
           kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "k" } },
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "amount" },
+          },
           type: {
             kind: "NonNullType",
             type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
           },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "offset" },
+          },
+          type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
         },
         {
           kind: "VariableDefinition",
@@ -1225,8 +1507,19 @@ export const GetAnimeRecommendationsDocument = {
               },
               {
                 kind: "Argument",
-                name: { kind: "Name", value: "k" },
-                value: { kind: "Variable", name: { kind: "Name", value: "k" } },
+                name: { kind: "Name", value: "amount" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "amount" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "offset" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "offset" },
+                },
               },
               {
                 kind: "Argument",
@@ -1459,6 +1752,14 @@ export const GetGroupRecomendationsDocument = {
             type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
           },
         },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "offset" },
+          },
+          type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -1571,6 +1872,14 @@ export const GetGroupRecomendationsDocument = {
                   name: { kind: "Name", value: "studios" },
                 },
               },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "offset" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "offset" },
+                },
+              },
             ],
             selectionSet: {
               kind: "SelectionSet",
@@ -1651,6 +1960,7 @@ export const GetUserAnimeListDocument = {
                     kind: "SelectionSet",
                     selections: [
                       { kind: "Field", name: { kind: "Name", value: "id" } },
+                      { kind: "Field", name: { kind: "Name", value: "title" } },
                       {
                         kind: "Field",
                         name: { kind: "Name", value: "popularity" },

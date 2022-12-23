@@ -33,6 +33,22 @@ export type QueryAnime = Pick<
   | "alternativeTitles"
 >;
 
+export type ExtendedQueryAnime = Pick<
+  Anime,
+  | "id"
+  | "ageClassification"
+  | "genres"
+  | "mediaType"
+  | "picture"
+  | "popularity"
+  | "rank"
+  | "score"
+  | "title"
+  | "alternativeTitles"
+  | "status"
+  | "synopsis"
+>;
+
 export type ComposedAnimeQueryResponse = {
   popularity: AnimeQueryResponse;
   score: AnimeQueryResponse;

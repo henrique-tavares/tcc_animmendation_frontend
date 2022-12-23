@@ -1,6 +1,6 @@
 <template>
   <nav
-    class="flex flex-row justify-center gap-8 px-5 bg-ani-cold-white shadow-md"
+    class="flex flex-row justify-center gap-8 md:px-5 bg-ani-cold-white shadow-md"
   >
     <NavItem routeName="home"> Início </NavItem>
     <NavItem routeName="top-10"> Top 10 </NavItem>

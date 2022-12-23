@@ -24,6 +24,7 @@ export default async () => {
     (rating): UserAnimeList => ({
       anime: {
         id: rating.anime.id,
+        title: rating.anime.title,
         popularity: rating.anime.popularity ?? undefined,
         genres: rating.anime.genres ?? undefined,
         ageClassification: rating.anime.ageClassification ?? undefined,

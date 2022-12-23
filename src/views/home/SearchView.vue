@@ -1,120 +1,208 @@
 <template>
-  <div
-    class="container w-full flex flex-col self-center items-center gap-10 py-10"
-  >
-    <div class="max-w-[1000px] flex flex-col items-center w-full gap-6">
-      <div class="relative w-full select-none">
-        <button class="absolute right-0 inset-y-0 pr-2" @click="fetchWithTitle">
-          <div
-            class="p-2 bg-transparent active:bg-black/10 transition rounded-full"
-          >
-            <IconTablerSearch class="w-6 h-6 text-blue-900" />
-          </div>
-        </button>
-        <input
-          type="text"
-          placeholder="Começe a digitar o Título"
-          v-model="titleInput"
-          @keypress.enter="fetchWithTitle"
-          class="w-full py-4 px-6 text-blue-900 placeholder:text-ani-faded-blue bg-ani-cold-white rounded-xl focus:ring-4 text-lg shadow-md focus:shadow-lg ring-ani-blue outline-none transition pr-12"
-        />
-      </div>
-      <div class="flex flex-col bg-ani-cold-white w-full rounded-xl shadow-md">
-        <button
-          class="btn btn-secondary gap-2 flex items-center no-animation"
-          :class="{ 'shadow-md': filtersShow }"
-          @click="filtersShow = !filtersShow"
-        >
-          Filtros
-          <IconTablerChevronDown
-            class="transition w-5 h-5"
-            :class="{ 'rotate-180': filtersShow }"
-          />
-        </button>
-        <Collapse
-          :when="filtersShow"
-          class="custom-collapse flex flex-col md:grid grid-cols-2 gap-4 w-full max-w-[700px] md:max-w-none !p-4"
-        >
-          <div class="flex flex-col items-start w-full">
-            <span class="text-ani-faded-blue font-medium">Gêneros</span>
-            <Multiselect
-              mode="tags"
-              :searchable="true"
-              :close-on-select="false"
-              v-model="genres"
-              :options="fetchGenres"
-              class="w-full custom-multiselect"
-            ></Multiselect>
-          </div>
-          <div class="flex flex-col items-start w-full">
-            <span class="text-ani-faded-blue font-medium">Mídia</span>
-            <Multiselect
-              mode="tags"
-              :searchable="true"
-              :close-on-select="false"
-              v-model="mediaTypes"
-              :options="mediaTypesOptions"
-              class="w-full custom-multiselect"
-            ></Multiselect>
-          </div>
-          <div class="flex flex-col items-start w-full">
-            <span class="text-ani-faded-blue font-medium">Fonte</span>
-            <Multiselect
-              mode="tags"
-              :searchable="true"
-              :close-on-select="false"
-              v-model="sources"
-              :options="fetchSources"
-              class="w-full custom-multiselect"
-            ></Multiselect>
-          </div>
-          <div class="flex flex-col items-start w-full">
-            <span class="text-ani-faded-blue font-medium">Estúdios</span>
-            <Multiselect
-              mode="tags"
-              :searchable="true"
-              :close-on-select="false"
-              v-model="studios"
-              :options="fetchStudios"
-              class="w-full custom-multiselect"
-            ></Multiselect>
-          </div>
-        </Collapse>
-      </div>
-    </div>
+  <div class="flex flex-col container w-full self-center items-center">
     <div
-      class="grid grid-cols-[repeat(auto-fill,_256px)] gap-6 justify-center justify-items-center items-center w-full pb-72"
+      class="w-full flex bg-ani-light-blue/20 rounded-b-2xl shadow-md max-w-[1000px]"
+      v-if="!!user"
     >
-      <AnimeItem v-for="(anime, i) in animesData" :anime="anime" />
+      <Transition name="fade" mode="out-in">
+        <button
+          type="button"
+          v-if="chosenTab == 'all'"
+          class="bg-ani-light-blue text-blue-900 font-semibold md:text-lg w-full rounded-b-2xl h-full px-4 py-2"
+        >
+          Todos
+        </button>
+        <button
+          type="button"
+          v-else
+          class="bg-transparent text-blue-900/30 font-semibold md:text-lg w-full rounded-b-2xl h-full px-4 py-2 hover:text-blue-900 transition-all"
+          @click="chosenTab = 'all'"
+        >
+          Todos
+        </button>
+      </Transition>
+      <Transition name="fade" mode="out-in">
+        <button
+          type="button"
+          v-if="chosenTab == 'mylist'"
+          class="bg-ani-light-blue text-blue-900 font-semibold md:text-lg w-full rounded-b-2xl h-full px-4 py-2"
+        >
+          Minha Lista
+        </button>
+        <button
+          type="button"
+          v-else
+          class="bg-transparent text-blue-900/30 font-semibold md:text-lg w-full rounded-b-2xl h-full px-4 py-2 hover:text-blue-900 transition-all"
+          @click="chosenTab = 'mylist'"
+        >
+          Minha Lista
+        </button>
+      </Transition>
+    </div>
+
+    <div class="w-full flex flex-col self-center items-center gap-10 py-10">
+      <div class="max-w-[1000px] flex flex-col items-center w-full gap-6">
+        <div class="relative w-full select-none">
+          <button
+            type="button"
+            class="absolute right-0 inset-y-0 pr-2"
+            @click="handleFetchWithTitle"
+          >
+            <div
+              class="p-2 bg-transparent active:bg-black/10 transition rounded-full"
+            >
+              <IconTablerSearch class="w-6 h-6 text-blue-900" />
+            </div>
+          </button>
+          <input
+            type="text"
+            placeholder="Começe a digitar o Título"
+            v-model="titleInput"
+            @keypress.enter="handleFetchWithTitle"
+            class="w-full py-4 px-6 text-blue-900 placeholder:text-ani-faded-blue bg-ani-cold-white rounded-xl focus:ring-4 md:text-lg shadow-md focus:shadow-lg ring-ani-blue outline-none transition pr-12"
+          />
+        </div>
+        <div
+          class="flex flex-col bg-ani-cold-white w-full rounded-xl shadow-md"
+        >
+          <button
+            type="button"
+            class="btn btn-primary gap-2 flex items-center no-animation"
+            :class="{ 'shadow-md': filtersShow }"
+            @click="filtersShow = !filtersShow"
+          >
+            Filtros
+            <IconTablerChevronDown
+              class="transition w-5 h-5"
+              :class="{ 'rotate-180': filtersShow }"
+            />
+          </button>
+          <Collapse
+            :when="filtersShow"
+            class="custom-collapse flex flex-col md:grid grid-cols-2 gap-4 w-full max-w-[700px] md:max-w-none !p-4"
+          >
+            <div class="flex flex-col items-start w-full">
+              <span class="text-ani-faded-blue font-medium">Gêneros</span>
+              <Multiselect
+                mode="tags"
+                :close-on-select="false"
+                v-model="genres"
+                :options="fetchGenres"
+                class="w-full custom-multiselect md:!hidden"
+              ></Multiselect>
+              <Multiselect
+                mode="tags"
+                :searchable="true"
+                :close-on-select="false"
+                v-model="genres"
+                :options="fetchGenres"
+                class="w-full custom-multiselect max-md:!hidden"
+              ></Multiselect>
+            </div>
+            <div class="flex flex-col items-start w-full">
+              <span class="text-ani-faded-blue font-medium">Mídia</span>
+              <Multiselect
+                mode="tags"
+                :close-on-select="false"
+                v-model="mediaTypes"
+                :options="mediaTypesOptions"
+                class="w-full custom-multiselect md:!hidden"
+              ></Multiselect>
+              <Multiselect
+                mode="tags"
+                :searchable="true"
+                :close-on-select="false"
+                v-model="mediaTypes"
+                :options="mediaTypesOptions"
+                class="w-full custom-multiselect max-md:!hidden"
+              ></Multiselect>
+            </div>
+            <div class="flex flex-col items-start w-full">
+              <span class="text-ani-faded-blue font-medium">Fonte</span>
+              <Multiselect
+                mode="tags"
+                :close-on-select="false"
+                v-model="sources"
+                :options="fetchSources"
+                class="w-full custom-multiselect md:!hidden"
+              ></Multiselect>
+              <Multiselect
+                mode="tags"
+                :searchable="true"
+                :close-on-select="false"
+                v-model="sources"
+                :options="fetchSources"
+                class="w-full custom-multiselect max-md:!hidden"
+              ></Multiselect>
+            </div>
+            <div class="flex flex-col items-start w-full">
+              <span class="text-ani-faded-blue font-medium">Estúdios</span>
+              <Multiselect
+                mode="tags"
+                :close-on-select="false"
+                v-model="studios"
+                :options="fetchStudios"
+                class="w-full custom-multiselect md:!hidden"
+              ></Multiselect>
+              <Multiselect
+                mode="tags"
+                :searchable="true"
+                :close-on-select="false"
+                v-model="studios"
+                :options="fetchStudios"
+                class="w-full custom-multiselect max-md:!hidden"
+              ></Multiselect>
+            </div>
+          </Collapse>
+        </div>
+      </div>
+      <Transition name="fade">
+        <AnimeGridGeneral
+          v-if="chosenTab == 'all'"
+          :filters="filters"
+          :title="titleInput"
+          ref="animeGridGeneral"
+        />
+        <AnimeGridUser
+          v-else-if="chosenTab == 'mylist'"
+          :filters="filters"
+          :title="titleInput"
+          ref="animeGridUser"
+        />
+      </Transition>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, inject, onMounted, ref, watch } from "vue";
-import Multiselect from "@vueform/multiselect";
-import { Collapse } from "vue-collapsed";
-import { useUserListStore } from "@/stores/userList";
-import { promissifyQueryResult } from "@/utils/apolloQueryWrapper";
-import { useLazyQuery } from "@vue/apollo-composable";
+import AnimeGridGeneral from "@/components/search/AnimeGridGeneral.vue";
+import AnimeGridUser from "@/components/search/AnimeGridUser.vue";
 import {
   AnimeMediaType,
   GetAnimeGenresDocument,
   GetAnimeSourcesDocument,
   GetAnimeStudioDocument,
-  GetTopAnimeDocument,
-  TopAnimeMethod,
 } from "@/graphql/gen/generated";
+import { useUserStore } from "@/stores/user";
+import { genresTranslator, sourcesTranslator } from "@/translate/anime";
+import { promissifyQueryResult } from "@/utils/apolloQueryWrapper";
+import { useLazyQuery } from "@vue/apollo-composable";
+import Multiselect from "@vueform/multiselect";
 import { capitalize } from "lodash";
-import { emitterKey } from "@/providers/emitterProvider";
-import type { QueryAnime } from "@/graphql/queries/animeQueries";
-import AnimeItem from "@/components/anime/AnimeItem.vue";
-
-const emitter = inject(emitterKey)!;
-
-const animesData = ref<QueryAnime[]>([]);
+import { storeToRefs } from "pinia";
+import { computed, ref } from "vue";
+import { Collapse } from "vue-collapsed";
 
 const filtersShow = ref(false);
+const titleInput = ref("");
+const chosenTab = ref<"all" | "mylist">("all");
+
+const { user } = storeToRefs(useUserStore());
+
+const animeGridGeneral = ref<InstanceType<typeof AnimeGridGeneral> | null>(
+  null
+);
+const animeGridUser = ref<InstanceType<typeof AnimeGridUser> | null>(null);
 
 const genres = ref<string[]>([]);
 const mediaTypes = ref<AnimeMediaType[]>([]);
@@ -127,11 +215,6 @@ const filters = computed(() => ({
   sources: sources.value,
   studios: studios.value,
 }));
-
-const titleInput = ref("");
-
-const generalOffset = ref<number | null>();
-const userOffset = ref<number>(0);
 
 const mediaTypesOptions: Record<AnimeMediaType, string> = {
   TV: "TV",
@@ -146,7 +229,13 @@ async function fetchGenres() {
     useLazyQuery(GetAnimeGenresDocument)
   );
 
-  return genres.map(({ genre }) => genre);
+  return genres.reduce(
+    (acc, { genre }) => ({
+      ...acc,
+      [genre]: genresTranslator(genre),
+    }),
+    {} as Record<string, string>
+  );
 }
 
 async function fetchSources() {
@@ -157,7 +246,7 @@ async function fetchSources() {
   return sources.reduce(
     (acc, { source }) => ({
       ...acc,
-      [source]: capitalize(source.replaceAll("_", " ")),
+      [source]: capitalize(sourcesTranslator(source)),
     }),
     {} as Record<string, string>
   );
@@ -171,90 +260,21 @@ async function fetchStudios() {
   return studios.map(({ studio }) => studio);
 }
 
-watch(
-  () => filters.value,
-  async () => {
-    await fetchInitialAnimes();
-  }
-);
-
-async function fetchWithTitle() {
+async function handleFetchWithTitle() {
   if (!titleInput.value) {
-    await fetchInitialAnimes(titleInput.value);
+    chosenTab.value == "all"
+      ? await animeGridGeneral.value!.fetchInitialAnimes()
+      : await animeGridUser.value!.fetchInitialAnimes();
   }
 
   if (titleInput.value.length < 3) {
     return;
   }
 
-  await fetchInitialAnimes(titleInput.value);
+  chosenTab.value == "all"
+    ? await animeGridGeneral.value!.fetchInitialAnimes(titleInput.value)
+    : await animeGridUser.value!.fetchInitialAnimes(titleInput.value);
 }
-
-async function fetchInitialAnimes(title?: string) {
-  try {
-    emitter.emit("loading-modal", true);
-    generalOffset.value = null;
-    const { getTopAnime: animes } = await promissifyQueryResult(
-      useLazyQuery(GetTopAnimeDocument, {
-        method: TopAnimeMethod.Popularity,
-        amount: 50,
-        genres: filters.value.genres.length ? filters.value.genres : undefined,
-        mediaTypes: filters.value.mediaTypes.length
-          ? filters.value.mediaTypes
-          : undefined,
-        sources: filters.value.sources.length
-          ? filters.value.sources
-          : undefined,
-        studios: filters.value.studios.length
-          ? filters.value.studios
-          : undefined,
-        title,
-      })
-    );
-
-    animesData.value = animes.map((anime) => ({
-      id: anime.id,
-      alternativeTitles: anime.alternativeTitles,
-      score: anime.score,
-      title: anime.title,
-      ageClassification: anime.ageClassification,
-      genres: anime.genres,
-      mediaType: anime.mediaType,
-      picture: anime.picture,
-      popularity: anime.popularity,
-      rank: anime.rank,
-    }));
-  } catch (error) {
-    console.error(error);
-    return [];
-  } finally {
-    emitter.emit("loading-modal", false);
-  }
-}
-
-async function loadAnime() {
-  if (generalOffset.value == null) {
-    generalOffset.value = 0;
-  } else {
-    generalOffset.value += 100;
-  }
-
-  const {} = await promissifyQueryResult(
-    useLazyQuery(GetTopAnimeDocument, {
-      method: TopAnimeMethod.Title,
-      amount: 100,
-      genres: genres.value,
-      mediaTypes: mediaTypes.value,
-      sources: sources.value,
-      studios: studios.value,
-      offset: generalOffset.value,
-    })
-  );
-}
-
-onMounted(async () => {
-  await fetchInitialAnimes();
-});
 </script>
 
 <style src="@vueform/multiselect/themes/default.css"></style>

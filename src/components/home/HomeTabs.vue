@@ -4,7 +4,7 @@
   >
     <button
       type="button"
-      class="bg-transparent text-blue-900/20 font-semibold text-lg w-full rounded-b-2xl h-full px-4 pb-2 pt-4 hover:text-blue-900 transition-all"
+      class="bg-transparent text-blue-900/20 font-semibold md:text-lg w-full rounded-b-2xl h-full px-4 pb-2 pt-4 hover:text-blue-900 transition-all"
       :class="{
         '!bg-ani-light-blue !text-blue-900': modelValue == 'popularity',
       }"
@@ -14,7 +14,7 @@
     </button>
     <button
       type="button"
-      class="bg-transparent text-blue-900/20 font-semibold text-lg w-full rounded-b-2xl h-full px-4 pb-2 pt-4 hover:text-blue-900 transition-all"
+      class="bg-transparent text-blue-900/20 font-semibold md:text-lg w-full rounded-b-2xl h-full px-4 pb-2 pt-4 hover:text-blue-900 transition-all"
       :class="{
         '!bg-ani-light-blue !text-blue-900': modelValue == 'score',
       }"
