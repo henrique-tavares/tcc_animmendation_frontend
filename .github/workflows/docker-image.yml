@@ -21,6 +21,13 @@ jobs:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: set environment variables
+      uses: allenevans/set-env@v2.0.0
+      with:
+        VITE_MAL_CLIENT_ID: ${{ secrets.VITE_MAL_CLIENT_ID }}
+        VITE_API_URL: ${{ secrets.VITE_API_URL }}
+        VITE_TRANSLATOR_URL: ${{ secrets.VITE_TRANSLATOR_URL }}
     
     - name: Build and push
       uses: docker/build-push-action@v3
