@@ -84,8 +84,9 @@ async function fetchUser() {
 async function login() {
   provideApolloClient(apolloClient);
   const sessionId = Math.random().toString().split(".")[1];
-  const apiHost = import.meta.env.VITE_API_URL;
-  const url = new URL(`${apiHost}/login/mal?sessionId=${sessionId}`);
+  const url = new URL(
+    `${import.meta.env.VITE_API_URL}/login/mal?sessionId=${sessionId}`
+  );
   const loginTab = window.open(url, "_blank");
 
   if (!loginTab) {
