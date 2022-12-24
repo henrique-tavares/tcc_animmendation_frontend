@@ -2,7 +2,7 @@ import axios from "axios";
 
 async function translate(from: "en", to: "pt", text: string) {
   const res = await axios.post<{ translatedText: string }>(
-    `${import.meta.env.VITE_TRANSLATOR_URL}/translate`,
+    `${import.meta.env.VITE_API_URL}/translate`,
     {
       q: text,
       source: from,
