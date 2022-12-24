@@ -60,7 +60,7 @@ const router = createRouter({
 router.beforeEach(async (to, from) => {
   const userStore = useUserStore();
 
-  if (!userStore.user && to.name != "login") {
+  if (!userStore.user && to.name != "login" && !userStore.guest) {
     return {
       name: "login",
     };

@@ -69,12 +69,31 @@
                 Ver Recomendações
                 <IconTablerArrowNarrowRight />
               </button>
-              <div
+              <button
+                v-if="!animeGroupStore.inGroup(anime.id)"
+                type="button"
                 class="btn btn-sm w-full btn-outline btn-info rounded-full gap-2"
+                :class="{
+                  '!bg-transparent !text-info/75 !cursor-not-allowed':
+                    animeGroupStore.isFull(),
+                }"
+                :disabled="animeGroupStore.isFull()"
+                @click="
+                  handleAddGroupItem({ id: anime.id, title: anime.title })
+                "
               >
                 Add ao grupo
                 <IconTablerPlus />
-              </div>
+              </button>
+              <button
+                v-else
+                type="button"
+                class="btn btn-sm w-full btn-outline btn-info rounded-full gap-2"
+                @click="handleRemoveGroupItem(anime.id)"
+              >
+                Remover do grupo
+                <IconTablerMinus />
+              </button>
             </div>
           </div>
         </div>
@@ -91,6 +110,7 @@ import {
 } from "@/graphql/gen/generated";
 import type { QueryAnime } from "@/graphql/queries/animeQueries";
 import { emitterKey } from "@/providers/emitterProvider";
+import { useAnimeGroupStore, type AnimeGroupItem } from "@/stores/animeGroup";
 import { useUserListStore } from "@/stores/userList";
 import {
   genresTranslator,
@@ -105,12 +125,30 @@ const props = defineProps<{
   animeId: number;
 }>();
 
-const userListStore = useUserListStore();
+const animeGroupStore = useAnimeGroupStore();
 
 const emitter = inject(emitterKey)!;
 
 const relatedAnimesData = ref<RelatedAnime[]>([]);
 const ready = ref(false);
+
+function handleAddGroupItem(item: AnimeGroupItem) {
+  animeGroupStore.addItem(item);
+
+  emitter.emit("add-toast", {
+    type: "success",
+    message: "Anime adicionado ao grupo",
+  });
+}
+
+function handleRemoveGroupItem(id: number) {
+  animeGroupStore.removeItem(id);
+
+  emitter.emit("add-toast", {
+    type: "success",
+    message: "Anime removido do grupo",
+  });
+}
 
 async function fetchRelated() {
   const { getRelatedAnime: relatedAnimes } = await promissifyQueryResult(

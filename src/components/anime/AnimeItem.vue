@@ -158,6 +158,11 @@ function handleAddGroupItem(item: AnimeGroupItem) {
 
 function handleRemoveGroupItem(id: number) {
   animeGroupStore.removeItem(id);
+
+  emitter.emit("add-toast", {
+    type: "success",
+    message: "Anime removido do grupo",
+  });
 }
 
 function handleMouseLeave() {

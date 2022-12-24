@@ -22,12 +22,11 @@ jobs:
 
       - name: Make envfile
         run: |
-          echo "${{ secrets.ENV_FILE }}" > .env.production
-          ls -la .
+          echo "${{ secrets.ENV_FILE }}" > .env.production.local
 
-      #- name: Build and push
-      #  uses: docker/build-push-action@v3
-      #  with:
-      #    push: true
-      #    file: .docker/Dockerfile
-      #    tags: ghcr.io/${{ github.repository }}:latest
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          file: .docker/Dockerfile
+          tags: ghcr.io/${{ github.repository }}:latest
