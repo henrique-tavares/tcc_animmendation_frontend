@@ -27,7 +27,7 @@ jobs:
       with:
         envkey_VITE_MAL_CLIENT_ID: ${{ secrets.VITE_MAL_CLIENT_ID }}
         envkey_VITE_API_URL: ${{ secrets.VITE_API_URL }}
-        env_key_VITE_TRANSLATOR_URL: ${{ secrets.VITE_TRANSLATOR_URL }}
+        envkey_VITE_TRANSLATOR_URL: ${{ secrets.VITE_TRANSLATOR_URL }}
         file_name: .env.production
         fail_on_empty: true
     
