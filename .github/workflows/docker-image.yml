@@ -21,14 +21,8 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Make envfile
-        uses: actually-colab/github-action-create-env-file@v2.3
-        with:
-          envkey_VITE_MAL_CLIENT_ID: ${{ secrets.VITE_MAL_CLIENT_ID }}
-          envkey_VITE_API_URL: ${{ secrets.VITE_API_URL }}
-          envkey_VITE_TRANSLATOR_URL: ${{ secrets.VITE_TRANSLATOR_URL }}
-          directory: /home/runner/work/tcc_animmendation_frontend/tcc_animmendation_frontend
-          file_name: .env.production
-          fail_on_empty: true
+        run: |
+          echo "${{ secrets.ENV_FILE }}" > .env.production
 
       - name: Build and push
         uses: docker/build-push-action@v3
