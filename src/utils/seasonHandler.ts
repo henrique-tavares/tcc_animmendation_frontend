@@ -18,7 +18,7 @@ const monthToSeason: Record<number, AnimeSeason> = {
 };
 
 export function getCurrentSeason() {
-  const today = new Date();
+  const today = new Date('12/20/2022');
 
   return {
     season: monthToSeason[today.getMonth()],
@@ -27,7 +27,7 @@ export function getCurrentSeason() {
 }
 
 export function getPastSeason() {
-  const pastSeasonDate = subMonths(new Date(), 3);
+  const pastSeasonDate = subMonths(new Date('12/20/2022'), 3);
   return {
     season: monthToSeason[pastSeasonDate.getMonth()],
     year: pastSeasonDate.getFullYear(),
