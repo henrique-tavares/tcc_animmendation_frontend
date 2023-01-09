@@ -19,10 +19,18 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Create .env file
+        uses: SpicyPizza/create-envfile@v1.3.0
+        with:
+          envkey_VITE_MAL_CLIENT_ID: ${{ secrets.VITE_MAL_CLIENT_ID }}
+          envkey_VITE_API_URL: http://api.animmendation.com.br
+          envkey_VITE_TRANSLATOR_URL: http://api.animmendation.com.br/translate
+          file_name: .env.production.local
 
-      - name: Make envfile
+
+      - name: Test envfile
         run: |
-          echo "${{ secrets.ENV_FILE }}" > .env.production.local
           ls -a
           cat .env.production.local
 
