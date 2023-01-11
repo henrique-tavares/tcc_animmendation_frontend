@@ -34,7 +34,7 @@
           </div>
           <div class="flex flex-col md:flex-row w-full justify-between gap-4 self-stretch">
             <div class="flex flex-col items-start justify-between self-stretch">
-              <div class="flex flex-col md:flex-row items-center gap-2">
+              <div class="flex flex-col md:flex-row items-center self-center gap-2">
                 <span class="md:text-lg font-medium">
                   {{ anime.title }}
                 </span>
