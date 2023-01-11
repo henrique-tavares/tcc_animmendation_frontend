@@ -14,7 +14,7 @@
         :key="i"
         class="border-ani-faded-blue/25"
       >
-        <div class="flex items-center p-4 gap-4">
+        <div class="flex flex-col md:flex-row items-center p-4 gap-4">
           <div
             class="h-40 w-28 flex flex-shrink-0 rounded-2xl relative"
             :class="{ vignette: !!anime.picture }"
@@ -32,9 +32,9 @@
               <IconTablerCameraOff class="text-white w-16 h-16" />
             </div>
           </div>
-          <div class="flex w-full justify-between gap-4 self-stretch">
+          <div class="flex flex-col md:flex-row w-full justify-between gap-4 self-stretch">
             <div class="flex flex-col items-start justify-between self-stretch">
-              <div class="flex items-center gap-2">
+              <div class="flex flex-col md:flex-row items-center gap-2">
                 <span class="md:text-lg font-medium">
                   {{ anime.title }}
                 </span>
